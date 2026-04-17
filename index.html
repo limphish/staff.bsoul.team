@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="BlackSoul — команда профессионалов">
+    <title>BlackSoul</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+       
+        :root {
+            --bg: #000000;
+            --text: #ffffff;
+        }
+       
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .fab {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .fab:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 12px 35px rgba(255,255,255,0.15);
+        }
+        
+        .menu-emoji {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 6px rgba(255,255,255,0.25));
+            transition: transform 0.25s ease;
+        }
+        
+        .menu-item:hover .menu-emoji {
+            transform: scale(1.2);
+        }
+        
+        .button-emoji {
+            width: 22px;
+            height: 22px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+        .team-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .about-emoji-title {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 8px rgba(255,255,255,0.3));
+            transition: transform 0.3s ease;
+        }
+        
+        .about-emoji-title:hover {
+            transform: scale(1.15) rotate(6deg);
+        }
+        
+        .about-emoji {
+            width: 34px;
+            height: 34px;
+            vertical-align: middle;
+            margin-right: 8px;
+            filter: drop-shadow(0 0 6px rgba(255,255,255,0.25));
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        #neuron-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            padding: 0 20px;
+            opacity: 0;
+            transform: translateY(60px);
+            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .hero.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .photo-container {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin-bottom: 40px;
+            perspective: 1000px; /* для небольшого 3D-эффекта */
+        }
+
+        .photo-frame {
+            width: 100%;
+            height: 100%;
+            border-radius: 32px;
+            overflow: hidden;
+            border: 6px solid #ffffff;
+            box-shadow: 0 0 50px rgba(255,255,255,0.15);
+            transition: transform 0.15s ease-out;
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease-out;
+        }
+
+        .hero-text {
+            font-size: 78px;
+            font-weight: 800;
+            letter-spacing: -3.5px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .hero-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hero-button {
+            padding: 16px 48px;
+            font-size: 20px;
+            font-weight: 600;
+            background: #ffffff;
+            color: #000000;
+            border-radius: 9999px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .hero-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+        }
+
+        section {
+            padding: 100px 20px;
+            max-width: 1280px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(60px);
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h2 {
+            font-size: 42px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .big-section {
+            background: #111111;
+            border-radius: 32px;
+            padding: 50px 25px;
+        }
+
+        .services-grid, .advantages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+        @media (min-width: 992px) {
+            .services-grid, .advantages-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .service-card, .adv-card {
+            background: #1a1a1a;
+            border-radius: 28px;
+            padding: 34px 24px;
+            text-align: center;
+            border: 1px solid #222;
+            transition: all 0.4s ease;
+        }
+        .service-card:hover, .adv-card:hover {
+            transform: translateY(-10px);
+            border-color: #444;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+        }
+
+        .service-card h3, .adv-card h3 {
+            font-size: 26px;
+            margin: 18px 0 12px;
+        }
+        .service-card p, .adv-card p {
+            font-size: 15.5px;
+            color: #bbbbbb;
+            line-height: 1.55;
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 28px;
+        }
+        @media (min-width: 992px) {
+            .news-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+
+        .about-emoji:hover {
+            transform: scale(1.2);
+            transition: 0.3s;
+        }
+        .news-card {
+            background: #111111;
+            border-radius: 28px;
+            padding: 28px;
+            transition: all 0.4s ease;
+            border: 1px solid #222;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .news-card:hover {
+            transform: translateY(-8px);
+            border-color: #555;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .news-date {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        .news-theme {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            line-height: 1.3;
+        }
+        .news-text {
+            font-size: 15.8px;
+            color: #bbbbbb;
+            flex-grow: 1;
+            line-height: 1.65;
+        }
+        .news-link {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+            display: inline-block;
+            transition: color 0.3s;
+        }
+        .news-link:hover {
+            color: #aaa;
+        }
+
+        footer {
+            background: #000000;
+            border-top: 1px solid #222222;
+            padding: 50px 20px 40px;
+            text-align: center;
+            color: #666;
+            font-size: 15px;
+        }
+
+        .fab {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 62px;
+            height: 62px;
+            background: #ffffff;
+            color: #000000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            z-index: 9999;
+            transition: transform 0.3s ease;
+        }
+        .fab:hover {
+            transform: scale(1.1);
+        }
+
+        .menu {
+            position: fixed;
+            bottom: 100px;
+            right: 25px;
+            background: #111;
+            border-radius: 24px;
+            padding: 12px 8px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.7);
+            display: none;
+            flex-direction: column;
+            min-width: 220px;
+            z-index: 9998;
+        }
+        .menu.show { display: flex; }
+        .menu-item {
+            padding: 14px 24px;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 14px;
+        }
+        .menu-item:hover { background: #222; }
+
+        @media (max-width: 768px) {
+            .hero-text { font-size: 62px; }
+            .photo-container { width: 220px; height: 220px; }
+            section { padding: 80px 20px; }
+            h2 { font-size: 36px; }
+           
+            .services-grid, .advantages-grid,
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="neuron-canvas"></canvas>
+
+    <!-- HERO -->
+    <section class="hero" id="hero-section">
+        <div class="photo-container" id="photo-container">
+            <div class="photo-frame" id="photo-frame">
+                <img src="https://i.ibb.co/P83nqzT/temp-image.jpg" alt="BlackSoul Team Photo" id="team-photo">
+            </div>
+        </div>
+        <h1 class="hero-text" id="main-text">Black Soul</h1>
+        <a href="https://t.me/BSoulBot" onclick="goToBot()" class="hero-button">
+            <img src="gif/bot.gif" class="button-emoji" alt="emoji">
+            Перейти в бота
+        </a>
+    </section>
+
+    <!-- Остальные секции (без изменений) -->
+    <section id="team">
+        <h2 class="section-header team-title">
+            <img src="gif/about_us.gif" class="about-emoji-title" alt="emoji">
+            | О команде
+        </h2>
+        <div class="big-section">
+            <p style="font-size: 20px; max-width: 720px; margin: 0 auto; text-align: center; line-height: 1.65;">    
+                BlackSoul — это закрытая команда профессионалов, которая работает в тени и даёт своим участникам максимум возможностей.
+                Мы объединяем опыт, технологии и скорость. Присоединяйся — и начни зарабатывать уже сегодня.
+            </p>
+    
+            <p style="margin-top: 28px; font-size: 17px; color: #aaaaaa; text-align: center;">
+                Более 3 лет в сфере • 1200+ участников • Полная анонимность и защита
+            </p>
+        </div>
+    </section>
+
+    <section id="services">
+        <h2 class="section-header services-title">
+            <img src="gif/service.gif" class="about-emoji-title" alt="emoji">
+            | Наши сервисы
+        </h2>
+        <div class="big-section">
+            <div class="services-grid">
+                <div class="service-card"><h3>Escort</h3><p>Профессиональное сопровождение и организация встреч высшего уровня.</p></div>
+                <div class="service-card"><h3>Trade</h3><p>Торговля на крипто- и финансовых рынках с использованием закрытых сигналов.</p></div>
+                <div class="service-card"><h3>NFT</h3><p>Работа с невзаимозаменяемыми токенами: минтинг, трейдинг и коллаборации.</p></div>
+                <div class="service-card"><h3>ВУ</h3><p>Оформление и работа с водительскими удостоверениями международного образца.</p></div>
+                <div class="service-card"><h3>Narko</h3><p>Закрытые поставки и дистрибуция в премиальном сегменте.</p></div>
+                <div class="service-card"><h3>Stiller</h3><p>Кража коллекционных токенов с помощью специализированных программ.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="news">
+        <h2 class="section-header section-title-with-emoji">
+            <img src="gif/news.gif" class="about-emoji-title" alt="emoji">
+            | Последние новости
+        </h2>
+        <div id="news-container" class="news-grid"></div>
+    </section>
+
+    <section id="advantages">
+        <h2 class="section-header section-title-with-emoji">
+            <img src="gif/advantages.gif" class="about-emoji-title" alt="emoji">
+            | Преимущества команды
+        </h2>
+        <div class="big-section">
+            <div class="advantages-grid">
+                <div class="adv-card"><h3>Мануалы</h3><p>Подробная инструкция для начала работы.</p></div>
+                <div class="adv-card"><h3>Безопасность</h3><p>Защита ваших средств.</p></div>
+                <div class="adv-card"><h3>Быстрый старт</h3><p>Начните зарабатывать уже сейчас.</p></div>
+                <div class="adv-card"><h3>Поддержка</h3><p>Быстрый ответ от технической поддержки. Работа 24 на 7.</p></div>
+                <div class="adv-card"><h3>Акции</h3><p>Каждую неделю акции с процентом выплат, розыгрыши аккаунтов, VIP материалов, VPN ключей и многим другим.</p></div>
+                <div class="adv-card"><h3>Наставники</h3><p>Опытные наставники в своём направлении.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Политика защищена</p>
+        <p style="margin-top: 12px; font-size: 18px; font-weight: 600; color: #ffffff;">
+            BlackSoul. Все права защищены © 2026
+        </p>
+    </footer>
+
+    <div class="fab" id="fab-button" onclick="toggleMenu()">☰</div>
+    <div class="menu" id="floating-menu">
+        <a href="https://t.me/BSoulBot" target="_blank" class="menu-item">
+            <img src="gif/start.gif" class="menu-emoji"> Начать
+        </a>
+        <a href="https://top.bsoul.team" target="_blank" class="menu-item">
+            <img src="gif/cash.gif" class="menu-emoji"> Касса
+        </a>
+        <a href="https://staff.bsoul.team" target="_blank" class="menu-item">
+            <img src="gif/staff.gif" class="menu-emoji"> Персонал
+        </a>
+        <a href="https://bots.bsoul.team" target="_blank" class="menu-item">
+            <img src="gif/service.gif" class="menu-emoji"> Сервисы
+        </a>
+        <a href="https://t.me/BSoul_SupportBot" target="_blank" class="menu-item">
+            <img src="gif/support.gif" class="menu-emoji"> Поддержка
+        </a>
+        <a href="http://blog.bsoul.team/about_us" target="_blank" class="menu-item">
+            <img src="gif/about_us.gif" class="menu-emoji"> О нас
+        </a>
+    </div>
+
+    <script>
+        // === Canvas Neurons ===
+        const canvas = document.getElementById('neuron-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let isMobile = window.innerWidth < 768;
+
+        class Neuron {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * (isMobile ? 0.8 : 1.6);
+                this.vy = (Math.random() - 0.5) * (isMobile ? 0.8 : 1.6);
+                this.radius = Math.random() * 3 + 2;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+                this.vx *= 0.97;
+                this.vy *= 0.97;
+            }
+        }
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            isMobile = window.innerWidth < 768;
+            createNeurons(isMobile ? 48 : 130);
+        }
+
+        function createNeurons(count) {
+            particles = [];
+            for (let i = 0; i < count; i++) particles.push(new Neuron());
+        }
+
+        function drawNeurons() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                ctx.fillStyle = 'rgba(255,255,255,0.85)';
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            requestAnimationFrame(drawNeurons);
+        }
+
+        // === Движение фото за курсором ===
+        function initPhotoMovement() {
+            const container = document.getElementById('photo-container');
+            const frame = document.getElementById('photo-frame');
+            const img = document.getElementById('team-photo');
+
+            if (isMobile) return; // на телефоне отключаем
+
+            const maxMove = 18; // максимальное смещение в px
+
+            container.addEventListener('mousemove', (e) => {
+                const rect = container.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+
+                const mouseX = e.clientX - centerX;
+                const mouseY = e.clientY - centerY;
+
+                const rotateX = (mouseY / rect.height) * -12;  // небольшой tilt
+                const rotateY = (mouseX / rect.width) * 12;
+
+                const moveX = (mouseX / rect.width) * maxMove;
+                const moveY = (mouseY / rect.height) * maxMove;
+
+                frame.style.transform = `translate(${moveX}px, ${moveY}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                img.style.transform = `scale(1.06)`;
+            });
+
+            container.addEventListener('mouseleave', () => {
+                frame.style.transform = `translate(0, 0) rotateX(0deg) rotateY(0deg)`;
+                img.style.transform = `scale(1)`;
+            });
+        }
+
+        // === Остальные функции ===
+        function animateSections() {
+            const sections = document.querySelectorAll('section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) entry.target.classList.add('visible');
+                });
+            }, { threshold: 0.15 });
+            sections.forEach(sec => observer.observe(sec));
+        }
+
+        const newsData = [
+            { date: "11.04.2026", theme: "Новая архитектура", text: "Теперь в системе выплат добавлен xRocket в режиме мульти счёта.", link: "https://t.me/+zRlXdiF2Er4zYzJi" },
+            { date: "09.04.2026", theme: "Скорость работы", text: "Мы оптимизировали выдачу реквизитов для депозитов. Теперь процесс занимает до 2 минут - быстро, предсказуемо и без задержек.", link: "https://t.me/+zRlXdiF2Er4zYzJi" },
+            { date: "07.04.2026", theme: "Безопасность", text: "Мы начали разработку собственного VPN-решения с белыми списками и шифрованием трафика. Безопасность пользователей и инфраструктуры - наш приоритет.", link: "https://t.me/+zRlXdiF2Er4zYzJi" }
+        ];
+
+        function renderNews() {
+            const container = document.getElementById('news-container');
+            container.innerHTML = '';
+            newsData.forEach(news => {
+                container.innerHTML += `
+                    <div class="news-card">
+                        <div class="news-date">${news.date}</div>
+                        <h3 class="news-theme">${news.theme}</h3>
+                        <p class="news-text">${news.text}</p>
+                        <a href="${news.link}" class="news-link">Посмотреть →</a>
+                    </div>
+                `;
+            });
+        }
+
+        function goToBot() {
+            window.open('https://t.me/BSoulBot', '_blank');
+        }
+
+        let menuOpen = false;
+        function toggleMenu() {
+            const menu = document.getElementById('floating-menu');
+            menuOpen = !menuOpen;
+            if (menuOpen) {
+                menu.classList.add('show');
+                document.getElementById('fab-button').style.transform = 'rotate(135deg)';
+            } else {
+                menu.classList.remove('show');
+                document.getElementById('fab-button').style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function navigateToSection(section) {
+            toggleMenu();
+            const el = document.getElementById(section);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Запуск всего
+        window.onload = () => {
+            resizeCanvas();
+            drawNeurons();
+            window.addEventListener('resize', resizeCanvas);
+            renderNews();
+            animateSections();
+            initPhotoMovement();
+
+            setTimeout(() => {
+                document.getElementById('hero-section').classList.add('visible');
+            }, 150);
+        };
+    </script>
+</body>
+</html>
